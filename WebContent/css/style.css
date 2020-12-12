@@ -1,0 +1,13 @@
+body {
+	font-family: Tahoma, "Microsoft YaHei";
+}
+
+footer {
+	background-color: #FFFAF0;
+	padding-top: 3rem;
+	padding-bottom: 3rem;
+}
+
+footer p {
+	margin-bottom: .25rem;
+}
