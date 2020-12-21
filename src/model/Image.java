@@ -5,7 +5,7 @@ import java.util.Date;
 import com.alibaba.fastjson.annotation.JSONField;
 
 public class Image {
-	private int no;
+	private int id;
 	private String title;
 	private String description;
 	@JSONField(name = "src")
@@ -17,12 +17,12 @@ public class Image {
 
 	}
 
-	public int getNo() {
-		return no;
+	public int getId() {
+		return id;
 	}
 
-	public void setNo(int no) {
-		this.no = no;
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public String getTitle() {
@@ -51,7 +51,8 @@ public class Image {
 
 	@Override
 	public String toString() {
-		return "{\"title\": \"" + title + "\", \"description\": \"" + description + "\", \"path\": \"" + path + "\"}";
+		return "{\"id\": \"" + id + "\", \"title\": \"" + title + "\", \"description\": \"" + description
+				+ "\", \"path\": \"" + path + "\", \"timestamp\": \"" + timestamp + "\"}";
 	}
 
 	public Date getTimestamp() {
