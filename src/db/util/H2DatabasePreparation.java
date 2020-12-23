@@ -15,7 +15,7 @@ public class H2DatabasePreparation {
 	/*
 	 * 以嵌入式(本地)连接方式连接H2数据库
 	 */
-	private static final String JDBC_URL = "jdbc:h2:file:./db/h2db";
+	private static final String JDBC_URL = "jdbc:h2:file:~/db/h2db"; // 使用绝对路径
 	private static final String USER = "root";
 	private static final String PASSWORD = "root";
 	private static final String DRIVER_CLASS = "org.h2.Driver";

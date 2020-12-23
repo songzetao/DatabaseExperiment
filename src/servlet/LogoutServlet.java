@@ -11,11 +11,11 @@ import javax.servlet.http.HttpSession;
 import util.ResponseBuilder;
 import util.ResponseCode;
 
-@WebServlet("/login")
-public class LoginServlet extends HttpServlet {
+@WebServlet("/logout")
+public class LogoutServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	public LoginServlet() {
+	public LogoutServlet() {
 		super();
 	}
 
@@ -26,17 +26,9 @@ public class LoginServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String username = request.getParameter("username");
-		String password = request.getParameter("password");
 
-		HttpSession session = request.getSession();
-		
-		if ("admin".equals(username) &&"admin".equals(password)) {
-			session.setAttribute("USERNAME", username);
-			response.getWriter().append(ResponseBuilder.createJson(ResponseCode.USER_LOGIN_SUCCESS));
-		} else {
-			response.getWriter().append(ResponseBuilder.createJson(ResponseCode.USER_LOGIN_FAILED));
-		}
+		request.getSession().invalidate();
+		response.getWriter().append(ResponseBuilder.createJson(ResponseCode.USER_LOGOUT_SUCCESS));
 	}
 
 }

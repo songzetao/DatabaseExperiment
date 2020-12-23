@@ -1,25 +1,28 @@
 package servlet;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.alibaba.fastjson.JSON;
-
 import model.Image;
+import service.ImageService;
+import util.ResponseBuilder;
+import util.ResponseCode;
 
 @WebServlet("/images")
 public class ImageServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+
+	private ImageService imageService = new ImageService();
 
 	public ImageServlet() {
 		super();
@@ -27,57 +30,35 @@ public class ImageServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
 		HttpSession session = request.getSession();
+		response.setCharacterEncoding("utf-8");
+		response.setContentType("application/json; charset=utf-8");
 
+		/*
+		 * 从数据库分页查询image数据表记录
+		 */
+		List<Image> imageList = null;
 		if (session.getAttribute("USERNAME") != null) {
-			response.setCharacterEncoding("utf-8");
-			response.setContentType("application/json; charset=utf-8");
+			if (request.getParameter("pno") != null && request.getParameter("count") != null) {
+				try {
+					imageList = imageService.getImagesPaged(Integer.valueOf(request.getParameter("pno")),
+							Integer.valueOf(request.getParameter("count")));
 
-			Image im1 = new Image();
-			im1.setId(1);
-			im1.setTitle("Car");
-			im1.setDescription("This is a car image.");
-			im1.setPath("images/car.jpg");
-			im1.setTimestamp(new Date());
-
-			Image im2 = new Image();
-			im2.setId(2);
-			im2.setTitle("Trees");
-			im2.setDescription("This is a trees image.");
-			im2.setPath("images/trees.jpg");
-			im2.setTimestamp(new Date());
-
-			Image im3 = new Image();
-			im3.setId(3);
-			im3.setTitle("Girl");
-			im3.setDescription("This is a girl image.");
-			im3.setPath("images/girl.jpg");
-			im3.setTimestamp(new Date());
-
-			List<Image> imageList = new ArrayList<Image>();
-			imageList.add(im1);
-			imageList.add(im2);
-			imageList.add(im3);
-
-			List<Image> subImageList = new ArrayList<Image>();
-
-			for (int i = 0; i < Integer.valueOf(request.getParameter("count")); i++) {
-				subImageList.add(imageList.get(i));
+					response.getWriter().append(ResponseBuilder.createJson(imageList));
+				} catch (NumberFormatException | SQLException e) {
+					e.printStackTrace();
+					response.getWriter().append(ResponseBuilder.createJson(ResponseCode.SERVICE_ERROR));
+				}
+			} else {
+				response.getWriter().append(ResponseBuilder.createJson(ResponseCode.QUERY_PAGED_FAILED));
 			}
-
-			String jsonOutput = JSON.toJSONString(subImageList);
-			response.getWriter().append(jsonOutput);
-
 		} else {
-			response.getWriter().append("User Invalid.");
+			response.getWriter().append(ResponseBuilder.createJson(ResponseCode.INVALID_USER));
 		}
-
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		doGet(request, response);
 	}
-
 }

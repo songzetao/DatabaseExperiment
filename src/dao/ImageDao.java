@@ -17,6 +17,39 @@ import model.Image;
 public class ImageDao implements BasicDaoInterface<Image> {
 
 	@Override
+	public List<Image> findPaged(int pno, int count) throws SQLException {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Image image = null;
+		List<Image> images = new ArrayList<Image>();
+		String sql = "SELECT * FROM IMAGE LIMIT ?,?";
+
+		try {
+			conn = DatabaseUtil.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, (pno - 1) * count);
+			ps.setInt(2, count);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				image = new Image();
+				image.setId(rs.getInt("id"));
+				image.setTitle(rs.getString("title"));
+				image.setDescription(rs.getString("description"));
+				image.setPath(rs.getString("path"));
+				image.setTimestamp(rs.getTimestamp("timestamp"));
+				images.add(image);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new SQLException("select data paged failed.");
+		} finally {
+			DatabaseUtil.close(rs, ps, conn);
+		}
+		return images;
+	}
+
+	@Override
 	public List<Image> findAll() throws SQLException {
 		Connection conn = null;
 		PreparedStatement ps = null;

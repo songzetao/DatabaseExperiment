@@ -54,6 +54,9 @@
 				</div>
 			</div>
 
+			<!-- Tag: 将大图轮询展示为所有图片中点击量最高、或者点赞数量最多的TOP N张图，
+				点击量、点赞数以某图片的Detail页面点击次数或在Detail页面中对图片的点赞操作为依据，
+				涉及到对IMAGE数据表结构，Image模型、Dao、Service等的修改 -->
 			<div class="row">
 				<h1 class="page-header">Images</h1>
 				<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
@@ -101,7 +104,8 @@
 
 			<div class="row">
 				<div class="col-sm">
-					<button type="button" class="btn btn-warning btn-block" v-on:click="loadmore($event, 1)">Load more
+					<button type="button" class="btn btn-warning btn-block"
+						v-on:click="loadmore($event, current_pno, current_count)">Load more
 						...</button>
 				</div>
 			</div>
@@ -130,14 +134,19 @@
 			el: '#main',
 			data: {
 				message: '希望通过该项目的学习，大家能够独立做一个简单的网站系统。',
-				images: []
+				images: [],
+				current_pno: 1,
+				current_count: 1
 			},
 			methods: {
-				loadmore: function (event, num) {
-					this.$http.get('images?count=' + num).then(function (res) {
+				loadmore: function (event, pno, count) {
+					this.$http.get('images?pno=' + pno + '&count=' + count).then(function (res) {
 						console.log(res.body);
-						for (var i = 0; i < res.body.length; i++) {
-							this.images.push(res.body[i]);
+						if (res.body.code == 1000) {
+							this.current_pno++;
+							for (var i = 0; i < res.body.data.length; i++) {
+								this.images.push(res.body.data[i]);
+							}
 						}
 					}, function () {
 						console.log('GET images failed.');
@@ -145,8 +154,8 @@
 				}
 			}
 		});
-		
-		main.loadmore(null, 3);
+		// yemian页面加载后默认执行
+		main.loadmore(null, 1, 1);
 
 		var footer = new Vue(
 			{
