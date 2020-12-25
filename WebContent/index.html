@@ -18,7 +18,7 @@
 	<header>
 		<!-- 导航栏 -->
 		<nav class="navbar navbar-expand-lg navbar-light bg-light">
-			<a class="navbar-brand" href="#">Image World</a>
+			<a class="navbar-brand" href="index.html">Image World</a>
 			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
 				aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 				<span class="navbar-toggler-icon"></span>
@@ -26,7 +26,7 @@
 
 			<div class="collapse navbar-collapse" id="navbarSupportedContent">
 				<ul class="navbar-nav mr-auto">
-					<li class="nav-item active"><a class="nav-link" href="#">Images
+					<li class="nav-item active"><a class="nav-link" href="index.html">Images
 							<span class="sr-only">(current)</span>
 						</a></li>
 					<li class="nav-item"><a class="nav-link" href="#">Video</a></li>
@@ -93,7 +93,7 @@
 						<div class="card-body">
 							<h5 class="card-title">{{image.title}}</h5>
 							<p class="card-text">{{image.description}}</p>
-							<a href="#" class="btn btn-outline-primary btn-sm">Details</a>
+							<a v-bind:href="'detail.html?id=' + image.id" class="btn btn-outline-primary btn-sm">Detail</a>
 						</div>
 						<div class="card-footer">
 							<small class="text-muted">{{image.timestamp}}</small>
@@ -141,8 +141,8 @@
 			methods: {
 				loadmore: function (event, pno, count) {
 					this.$http.get('images?pno=' + pno + '&count=' + count).then(function (res) {
-						console.log(res.body);
-						if (res.body.code == 1000) {
+						console.log(res.body);						
+						if (res.body.code == 1000 && res.body.data.length != 0) {
 							this.current_pno++;
 							for (var i = 0; i < res.body.data.length; i++) {
 								this.images.push(res.body.data[i]);
@@ -154,7 +154,7 @@
 				}
 			}
 		});
-		// yemian页面加载后默认执行
+		// 页面加载后默认执行
 		main.loadmore(null, 1, 1);
 
 		var footer = new Vue(

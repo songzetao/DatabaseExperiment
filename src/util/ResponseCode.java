@@ -9,11 +9,11 @@ package util;
 public enum ResponseCode {
 	SUCCESS(1000, "success"),                       
 	SERVICE_ERROR(1004, "service error"),
-	QUERY_PAGED_FAILED(1000, "query paged failed"),                       
     INVALID_USER(2000, "invalid user"),
     USER_LOGIN_SUCCESS(2001, "user login success"),
 	USER_LOGIN_FAILED(2002, "user login failed"),
-	USER_LOGOUT_SUCCESS(2003, "user logout success");
+	USER_LOGOUT_SUCCESS(2003, "user logout success"),
+	QUERY_FAILED(3001, "query failed");         
 
 	private int code; // 状态码
 	private String message; // 返回信息

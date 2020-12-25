@@ -30,8 +30,8 @@ public class LoginServlet extends HttpServlet {
 		String password = request.getParameter("password");
 
 		HttpSession session = request.getSession();
-		
-		if ("admin".equals(username) &&"admin".equals(password)) {
+
+		if ("admin".equals(username) && "admin".equals(password)) {
 			session.setAttribute("USERNAME", username);
 			response.getWriter().append(ResponseBuilder.createJson(ResponseCode.USER_LOGIN_SUCCESS));
 		} else {

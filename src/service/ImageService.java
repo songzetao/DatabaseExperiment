@@ -14,9 +14,10 @@ public class ImageService {
 	}
 
 	public List<Image> getImagesPaged(int pno, int count) throws SQLException {
-		/*
-		 * 补充代码
-		 */
 		return imageDao.findPaged(pno, count);
+	}
+
+	public Image getImageById(int id) throws SQLException {
+		return imageDao.findById(id);
 	}
 }

@@ -35,11 +35,13 @@ public class ImageServlet extends HttpServlet {
 		response.setContentType("application/json; charset=utf-8");
 
 		/*
-		 * 从数据库分页查询image数据表记录
+		 * 从数据库查询image数据表记录（分页查询、基于ID查询）
 		 */
 		List<Image> imageList = null;
+		Image image = null;
 		if (session.getAttribute("USERNAME") != null) {
-			if (request.getParameter("pno") != null && request.getParameter("count") != null) {
+			if (request.getParameter("pno") != null && request.getParameter("count") != null
+					&& request.getParameter("id") == null) { // 分页查询
 				try {
 					imageList = imageService.getImagesPaged(Integer.valueOf(request.getParameter("pno")),
 							Integer.valueOf(request.getParameter("count")));
@@ -49,8 +51,17 @@ public class ImageServlet extends HttpServlet {
 					e.printStackTrace();
 					response.getWriter().append(ResponseBuilder.createJson(ResponseCode.SERVICE_ERROR));
 				}
+			} else if (request.getParameter("id") != null && request.getParameter("pno") == null
+					&& request.getParameter("count") == null) { // 根据ID查询
+				try {
+					image = imageService.getImageById(Integer.valueOf(request.getParameter("id")));
+					response.getWriter().append(ResponseBuilder.createJson(image));
+				} catch (NumberFormatException | SQLException e) {
+					e.printStackTrace();
+					response.getWriter().append(ResponseBuilder.createJson(ResponseCode.SERVICE_ERROR));
+				}
 			} else {
-				response.getWriter().append(ResponseBuilder.createJson(ResponseCode.QUERY_PAGED_FAILED));
+				response.getWriter().append(ResponseBuilder.createJson(ResponseCode.QUERY_FAILED));
 			}
 		} else {
 			response.getWriter().append(ResponseBuilder.createJson(ResponseCode.INVALID_USER));
