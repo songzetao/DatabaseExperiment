@@ -8,15 +8,26 @@ public class Image {
 	private int id;
 	private String title;
 	private String description;
+	private int hitsNumber;
+	
+
 	@JSONField(name = "src")
 	private String path;
 	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Date timestamp;
 
 	public Image() {
-
+		hitsNumber=0;
+	}
+	public int getHitsNumber() {
+		return hitsNumber;
 	}
 
+	public void setHitsNumber(int hitsNumber) {
+		this.hitsNumber = hitsNumber;
+	}
+	
+	
 	public int getId() {
 		return id;
 	}
@@ -62,5 +73,6 @@ public class Image {
 	public void setTimestamp(Date timestamp) {
 		this.timestamp = timestamp;
 	}
-
+	
+	
 }

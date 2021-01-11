@@ -18,7 +18,7 @@ import service.ImageService;
 import util.ResponseBuilder;
 import util.ResponseCode;
 
-@WebServlet("/images")
+@WebServlet("/api/images")
 public class ImageServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -30,6 +30,14 @@ public class ImageServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
+//		if (request.getProtocol().compareTo("HTTP/1.0") == 0){    
+//	        response.setHeader("Pragma","no-cache");    
+//		}else if (request.getProtocol().compareTo("HTTP/1.1") == 0){    
+//	        response.setHeader("Cache-Control","no-cache");    
+//		}
+		
+		
 		HttpSession session = request.getSession();
 		response.setCharacterEncoding("utf-8");
 		response.setContentType("application/json; charset=utf-8");
@@ -45,7 +53,7 @@ public class ImageServlet extends HttpServlet {
 				try {
 					imageList = imageService.getImagesPaged(Integer.valueOf(request.getParameter("pno")),
 							Integer.valueOf(request.getParameter("count")));
-
+					//System.out.println("1");
 					response.getWriter().append(ResponseBuilder.createJson(imageList));
 				} catch (NumberFormatException | SQLException e) {
 					e.printStackTrace();
@@ -55,12 +63,25 @@ public class ImageServlet extends HttpServlet {
 					&& request.getParameter("count") == null) { // 根据ID查询
 				try {
 					image = imageService.getImageById(Integer.valueOf(request.getParameter("id")));
+					System.out.println("arrive");
+					imageService.clickDetail(Integer.parseInt(request.getParameter("id")));
 					response.getWriter().append(ResponseBuilder.createJson(image));
 				} catch (NumberFormatException | SQLException e) {
 					e.printStackTrace();
 					response.getWriter().append(ResponseBuilder.createJson(ResponseCode.SERVICE_ERROR));
 				}
-			} else {
+			}else if(request.getParameter("id") == null && request.getParameter("pno") == null
+					&& request.getParameter("count") == null) {
+				try {
+					//System.out.println("3");
+					response.getWriter().append(ResponseBuilder.createJson(imageService.getImagesC()));
+				} catch (NumberFormatException | SQLException e) {
+					e.printStackTrace();
+					response.getWriter().append(ResponseBuilder.createJson(ResponseCode.SERVICE_ERROR));
+				}
+				
+			}else {
+				//System.out.println("4");
 				response.getWriter().append(ResponseBuilder.createJson(ResponseCode.QUERY_FAILED));
 			}
 		} else {
@@ -70,6 +91,8 @@ public class ImageServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		//System.out.println("post");
 		doGet(request, response);
+		
 	}
 }

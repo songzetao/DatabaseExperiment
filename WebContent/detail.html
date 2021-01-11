@@ -19,19 +19,78 @@
 	<!-- Tag: 编写该detail.html，实现对图片详情的展示，可以加入点赞按钮，可以加入一首与该图片有关联的场景音乐 :)，
 		必须加入评论列表，评论数据要存入数据库，必须是登录用户才能评论，根据此要求编写其他所需的代码 -->
 
+	<nav class="navbar navbar-dark bg-dark">
+		<a class="navbar-brand" href="index.html">Image World</a>
+	</nav>
 
 	<main class="main mt-3" id="main">
 		<div class="container">
 			<div class="row">
 				<div class="col-sm">
-					<h1>{{imageId}}</h1>
-					<p>{{image}}</p>
+					<h1 class="page-header" v-text="image.title"></h1>
+					<div class="card">
+						<img v-bind:src="image.src" class="card-img-top" alt="images" />
+						<div class="card-body">
+							<h5 class="card-title">{{image.title}}</h5>
+							<p class="card-text">{{image.description}}</p>
+							<button type="button" class="btn btn-success" v-on:click="like(imageId)">Like</button>
+							<button type="button" class="btn btn-warning" v-on:click="dislike(imageId)">Dislike</button>
+						</div>
+						<div class="card-footer">
+							<small class="text-muted">{{image.timestamp}}</small>
+						</div>
+					</div>
 				</div>
+			</div>
 
+			<div class="row mt-4">
+				<div class="col-sm">
+					<h3 v-show="comments.length > 0">Comments</h3>
+					<div class="list-group list-group-flush">
+						<div class="list-group-item" v-for="item in comments">
+							<div class="d-flex w-100 justify-content-between">
+								<h5 class="mb-1">{{item.username}}</h5>
+								<small>{{item.timestamp}}</small>
+							</div>
+							<p class="mb-1">{{item.comment}}</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="row mt-3 mb-3">
+				<div class="col-sm-8">
+					<h3>Post Your Comment</h3>
+					<form>
+						<div class="form-group">
+							<label>Title</label> <input type="text" class="form-control"
+								placeholder="Title" v-model="comment.title">
+						</div>
+						<div class="form-group">
+							<label>Content</label>
+							<textarea class="form-control" rows="3" v-model="com"></textarea>
+						</div>
+						<button type="button" class="btn btn-primary"
+							
+							v-on:click="postComment(imageId)">Submit</button>
+							<!-- disabled="comment.content == undefined || comment.content == ''" -->:
+						<button type="button" class="btn btn-secondary"
+							v-on:click="comment={}">Reset</button>
+					</form>
+				</div>
 			</div>
 		</div>
 	</main>
-
+	
+	<!-- Footer -->
+	<footer class="mt-3" id="footer">
+		<div class="container text-muted">
+			<p class="float-right">
+				<a href="#">Back to top</a>
+			</p>
+		</div>
+	</footer>
+	
 	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
 	<script src="js/jquery.slim.min.js"></script>
 	<script src="js/popper.min.js"></script>
@@ -39,32 +98,87 @@
 	<!-- VUE -->
 	<script src="js/vue.js"></script>
 	<script src="js/vue-resource.min.js"></script>
+	<script src="js/vue-router.js"></script>
 	<script src="js/utils.js"></script>
 	<script>
 		var main = new Vue({
 			el : '#main',
 			data : {
 				imageId : undefined,
-				image : undefined
+				image : {},
+				comments : [],
+				comment : {},
+				com:undefined
 			},
 			methods : {
 				getImageDetail : function(id) {
-					this.$http.get('images?id=' + id).then(function(res) {
+					this.$http.get('api/images?id=' + id).then(function(res) {
 						console.log(res.body);
 						if (res.body.code == 1000) {
 							this.image = res.body.data;
+							document.title = this.image.title;
+						}
+						if (res.body.code == 2000) {
+							window.location.href = "login.html";
 						}
 					}, function() {
 						console.log('GET image failed.');
 					});
+				},
+				getComments:function(id){
+					this.$http.get('api/detail?id=' + id).then(function(res){
+						console.log(res.body);
+						if(res.body.code==1000){
+							for(var i=0;i<res.body.data.length;i++){
+								this.comments.push(res.body.data[i]);
+								console.log(res.body.data[i]);
+							}
+						}
+					},function(){
+						console.log("GET comments failed.")						
+					});
+					
+					//this.$router.push({path:'detail.html?id=' + id});
+				},
+				like:function(id){
+					
+					this.$http.post('api/images?id=' + id).then(function(res) {
+						//console.log(res.body);
+						console.log("success");
+					},function(){
+						console.log(id);
+					});
+				},
+				postComment : function(imageId) {
+					this.$http.post('api/detail?id=' + imageId+'&comment='+
+							this.com).then(function(res) {
+						console.log(res.bodyText);
+						//console.log(this.comment);
+						console.log(res.bodyText.code);
+						this.com=undefined;
+						this.comment={};
+						if (res.bodyText.code == 1000) {
+							console.log("1000");
+							this.comments.push(this.com);
+							this.comment = {};
+							
+						}
+					}, function() {
+						console.log('POST comment failed.');
+					});
+					this.getComments(imageId);
 				}
 			},
+			
 			mounted : function() {
 				// 获取URL参数中ID的值
 				this.imageId = utils.getValueByUrlParams("id");
 				this.getImageDetail(this.imageId);
+				
 			}
 		});
+		var imageId = utils.getValueByUrlParams("id");
+		main.getComments(imageId);
 	</script>
 </body>
 </html>

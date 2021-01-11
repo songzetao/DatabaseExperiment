@@ -21,7 +21,10 @@ public class LoginServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		doPost(request, response);
+		HttpSession session = request.getSession();
+		if (session.getAttribute("USERNAME") != null) {
+			response.getWriter().append(ResponseBuilder.createJson(session.getAttribute("USERNAME")));
+		}
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -33,9 +36,12 @@ public class LoginServlet extends HttpServlet {
 
 		if ("admin".equals(username) && "admin".equals(password)) {
 			session.setAttribute("USERNAME", username);
-			response.getWriter().append(ResponseBuilder.createJson(ResponseCode.USER_LOGIN_SUCCESS));
+			// response.getWriter().append(ResponseBuilder.createJson(ResponseCode.USER_LOGIN_SUCCESS));
+			// 此处用页面跳转的方式
+			response.sendRedirect("index.html");
 		} else {
-			response.getWriter().append(ResponseBuilder.createJson(ResponseCode.USER_LOGIN_FAILED));
+			// response.getWriter().append(ResponseBuilder.createJson(ResponseCode.USER_LOGIN_FAILED));
+			response.sendRedirect("login.html");
 		}
 	}
 

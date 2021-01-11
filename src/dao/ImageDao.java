@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -69,6 +71,7 @@ public class ImageDao implements BasicDaoInterface<Image> {
 				image.setDescription(rs.getString("description"));
 				image.setPath(rs.getString("path"));
 				image.setTimestamp(rs.getTimestamp("timestamp"));
+				image.setHitsNumber(rs.getInt("hitsNumber"));
 				images.add(image);
 			}
 		} catch (SQLException e) {
@@ -118,15 +121,19 @@ public class ImageDao implements BasicDaoInterface<Image> {
 	public void update(Image image) throws SQLException {
 		Connection conn = null;
 		PreparedStatement ps = null;
-		String sql = "UPDATE IMAGE SET title=?, description=?, path=?, timestamp=? WHERE id=?";
+		String sql = "UPDATE IMAGE SET title=?, description=?,hitsNumber=?, path=?, timestamp=? WHERE id=?";
 		try {
 			conn = DatabaseUtil.getConnection();
 			ps = conn.prepareStatement(sql);
 			ps.setString(1, image.getTitle());
 			ps.setString(2, image.getDescription());
-			ps.setString(3, image.getPath());
-			ps.setTimestamp(4, new Timestamp(new Date().getTime()));
-			ps.setInt(5, image.getId());
+			ps.setString(4, image.getPath());
+			
+			ps.setTimestamp(5, new Timestamp(new Date().getTime()));
+			ps.setInt(6, image.getId());
+			//System.out.println(ps.getParameterMetaData());
+		
+			ps.setInt(3, image.getHitsNumber());
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -177,6 +184,7 @@ public class ImageDao implements BasicDaoInterface<Image> {
 				image.setTitle(rs.getString("title"));
 				image.setDescription(rs.getString("description"));
 				image.setPath(rs.getString("path"));
+				image.setHitsNumber(rs.getInt("hitsNumber"));
 				image.setTimestamp(rs.getTimestamp("timestamp"));
 			}
 		} catch (SQLException e) {
@@ -186,5 +194,33 @@ public class ImageDao implements BasicDaoInterface<Image> {
 			DatabaseUtil.close(rs, ps, conn);
 		}
 		return image;
+	}
+	public List<Image> getImageCByDec() throws SQLException{
+		List<Image> images=this.findAll();
+		for(Image i:images) {
+			System.out.println(i.getDescription());
+			System.out.println(i.getHitsNumber());
+		}
+		images=this.sort(images);
+		return images;
+	}
+	private List<Image> sort(List<Image> img)throws SQLException{
+		for(int i=0;i<img.size()-1;i++) {
+			for(int j=i+1;j<img.size();j++) {
+				if(img.get(j-1).getHitsNumber()<img.get(j).getHitsNumber()) {
+					Image temp=img.get(j-1);
+					img.set(j-1, img.get(j));
+					img.set(j, temp);
+				}
+			}
+		}
+		List<Image> images=new ArrayList<Image>();
+		images.add(img.get(0));
+		images.add(img.get(1));
+		images.add(img.get(2));
+		for(Image i:images) {
+			System.out.println(i.getHitsNumber());
+		}
+		return images;
 	}
 }

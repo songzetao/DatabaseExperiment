@@ -16,7 +16,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import db.util.DatabaseUtil;
+import model.Comment;
 import model.Image;
+import model.User;
 import util.ResponseBuilder;
 import util.ResponseCode;
 
@@ -45,6 +47,12 @@ public class AppInitServlet extends HttpServlet {
 		Connection conn = null;
 		Statement stat = null;
 		ResultSet rs = null;
+		Connection connUser=null;
+		Statement statUser=null;
+		ResultSet rsUser=null;
+		Statement statCom=null;
+		ResultSet rsCom=null;
+		
 
 		try {
 			conn = DatabaseUtil.getConnection();
@@ -53,22 +61,24 @@ public class AppInitServlet extends HttpServlet {
 			stat.execute("DROP TABLE IF EXISTS IMAGE");
 			// 创建表
 			stat.execute(
-					"CREATE TABLE IMAGE(id INTEGER PRIMARY KEY auto_increment, title VARCHAR(255), description VARCHAR(255), path VARCHAR(255), timestamp TIMESTAMP)");
+					"CREATE TABLE IMAGE(id INTEGER PRIMARY KEY auto_increment, title VARCHAR(255), description VARCHAR(255), path VARCHAR(255), timestamp TIMESTAMP,hitsNumber INTEGER,comment VARCHAR(255))");
 			// 插入数据样例
 			stat.executeUpdate(
-					"INSERT INTO IMAGE(title, description, path, timestamp) VALUES('Car', 'This is a car image', 'images/car.jpg', CURRENT_TIMESTAMP())");
+					"INSERT INTO IMAGE(title, description, path, timestamp,hitsNumber,comment) VALUES('Car', 'This is a car image', 'images/car.jpg', CURRENT_TIMESTAMP(),0,null)");
 			stat.executeUpdate(
-					"INSERT INTO IMAGE(title, description, path, timestamp) VALUES('Beauty', 'This is a beauty image', 'images/beauty.jpg', CURRENT_TIMESTAMP())");
+					"INSERT INTO IMAGE(title, description, path, timestamp,hitsNumber,comment) VALUES('Beauty', 'This is a beauty image', 'images/beauty.jpg', CURRENT_TIMESTAMP(),0,null)");
 			stat.executeUpdate(
-					"INSERT INTO IMAGE(title, description, path, timestamp) VALUES('Game', 'This is a game image', 'images/game.jpg', CURRENT_TIMESTAMP())");
+					"INSERT INTO IMAGE(title, description, path, timestamp,hitsNumber,comment) VALUES('Game', 'This is a game image', 'images/game.jpg', CURRENT_TIMESTAMP(),0,null)");
 			stat.executeUpdate(
-					"INSERT INTO IMAGE(title, description, path, timestamp) VALUES('Girl', 'This is a girl image', 'images/girl.jpg', CURRENT_TIMESTAMP())");
+					"INSERT INTO IMAGE(title, description, path, timestamp,hitsNumber,comment) VALUES('Girl', 'This is a girl image', 'images/girl.jpg', CURRENT_TIMESTAMP(),0,null)");
 			stat.executeUpdate(
-					"INSERT INTO IMAGE(title, description, path, timestamp) VALUES('House', 'This is a house image', 'images/house.jpg', CURRENT_TIMESTAMP())");
+					"INSERT INTO IMAGE(title, description, path, timestamp,hitsNumber,comment) VALUES('House', 'This is a house image', 'images/house.jpg', CURRENT_TIMESTAMP(),0,null)");
 			stat.executeUpdate(
-					"INSERT INTO IMAGE(title, description, path, timestamp) VALUES('Snow', 'This is a snow image', 'images/snow.jpg', CURRENT_TIMESTAMP())");
+					"INSERT INTO IMAGE(title, description, path, timestamp,hitsNumber,comment) VALUES('Snow', 'This is a snow image', 'images/snow.jpg', CURRENT_TIMESTAMP(),0,null)");
 			stat.executeUpdate(
-					"INSERT INTO IMAGE(title, description, path, timestamp) VALUES('trees', 'This is a trees image', 'images/trees.jpg', CURRENT_TIMESTAMP())");
+					"INSERT INTO IMAGE(title, description, path, timestamp,hitsNumber,comment) VALUES('trees', 'This is a trees image', 'images/trees.jpg', CURRENT_TIMESTAMP(),0,null)");
+			
+			
 			
 
 			// 查询全表数据
@@ -82,6 +92,7 @@ public class AppInitServlet extends HttpServlet {
 				image.setDescription(rs.getString("description"));
 				image.setPath(rs.getString("path"));
 				image.setTimestamp(rs.getTimestamp("timestamp"));
+				image.setHitsNumber(rs.getInt("hitsNumber"));
 				images.add(image);
 			}
 			dataInit.put("images", images);
@@ -89,12 +100,70 @@ public class AppInitServlet extends HttpServlet {
 			/*************************************************************************
 			 * Tag: 参考以上IMAGE表初始化代码，补充初始化创建USER表并添加admin/admin用户的代码
 			 *************************************************************************/
+			//stat.close();
+			
+			
+			statUser=conn.createStatement();
+			statUser.execute("DROP TABLE IF EXISTS USER");
+			// 创建表
+			statUser.execute(
+					"CREATE TABLE USER(id INTEGER PRIMARY KEY auto_increment, username VARCHAR(255), password VARCHAR(255))");
+			// 插入数据样例
+			statUser.executeUpdate(
+					"INSERT INTO USER(username, password) VALUES('songzetao', '123456')");
+			
+			rsUser = statUser.executeQuery("SELECT * FROM USER");
+			List<User> users = new ArrayList<User>();
+			User user = null;
+			while (rsUser.next()) {
+				user = new User();
+				user.setUsername(rsUser.getString("username"));
+				user.setPassword(rsUser.getString("password"));
+				users.add(user);
+			}
+			dataInit.put("user", users); 
 
+			//创建评论表
+			statCom=conn.createStatement();
+				// 删表
+			statCom.execute("DROP TABLE IF EXISTS COMMENT");
+				// 创建表
+			statCom.execute(
+						"CREATE TABLE COMMENT(id INTEGER PRIMARY KEY auto_increment, imageID INTEGER, username VARCHAR(255), timestamp TIMESTAMP,comment VARCHAR(255))");
+				// 插入数据样例
+			statCom.executeUpdate(
+						"INSERT INTO COMMENT(imageID, username, timestamp, comment) VALUES(1, 'song', CURRENT_TIMESTAMP(),'这是一个测试评论')");
+			statCom.executeUpdate(
+						"INSERT INTO COMMENT(imageID, username, timestamp, comment) VALUES(1, 'ze', CURRENT_TIMESTAMP(),'这是一个测试评论')");
+			statCom.executeUpdate(
+						"INSERT INTO COMMENT(imageID, username, timestamp, comment) VALUES(3, 'song', CURRENT_TIMESTAMP(),'这是一个测试评论')");
+			statCom.executeUpdate(
+						"INSERT INTO COMMENT(imageID, username, timestamp, comment) VALUES(4, 'song', CURRENT_TIMESTAMP(),'这是一个测试评论')");
+			statCom.executeUpdate(
+						"INSERT INTO COMMENT(imageID, username, timestamp, comment) VALUES(5, 'song', CURRENT_TIMESTAMP(),'这是一个测试评论')");
+			statCom.executeUpdate(
+						"INSERT INTO COMMENT(imageID, username, timestamp, comment) VALUES(6, 'song', CURRENT_TIMESTAMP(),'这是一个测试评论')");
+			statCom.executeUpdate(
+						"INSERT INTO COMMENT(imageID, username, timestamp, comment) VALUES(7, 'song', CURRENT_TIMESTAMP(),'这是一个测试评论')");
+				// 查询全表数据
+			rs = stat.executeQuery("SELECT * FROM COMMENT");
+			List<Comment> comments = new ArrayList<Comment>();
+			Comment comment = null;
+			while (rs.next()) {
+				comment = new Comment();
+				comment.setImageID(rs.getInt("imageID"));
+				comment.setUsername(rs.getString("username"));
+				comment.setTimestamp(rs.getTimestamp("timestamp"));
+				comment.setComment(rs.getString("comment"));
+				comments.add(comment);
+			}
+			dataInit.put("comments", comments);
 			
 			
 			
-			dataInit.put("user", null); 
-
+			
+			
+			
 			// 将初始化的数据返回
 			if (dataInit.size() != 0) {
 				response.getWriter().append(ResponseBuilder.createJson(dataInit));
