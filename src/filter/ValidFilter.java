@@ -19,7 +19,7 @@ import util.ResponseCode;
 /**
  * Servlet Filter implementation class ValidFilter
  */
-@WebFilter("/api/*")
+@WebFilter("")
 public class ValidFilter implements Filter {
 
     /**
@@ -45,17 +45,17 @@ public class ValidFilter implements Filter {
 		//过滤器可以不止一个，过滤器可以组成链
 		// pass the request along the filter chain
 		//传递到servlet要写在这行代码上面
-		HttpServletRequest httpRequest = (HttpServletRequest) request;
-		HttpServletResponse httpResponse = (HttpServletResponse) response;
-		System.err.println(new Date() + " ValidateFilter " + httpRequest.getRequestURI());
-
-		if (httpRequest.getSession().getAttribute("USERNAME") != null) {
-			chain.doFilter(request, response);
-			System.out.println("通过过滤器");
-		} else {
-			httpResponse.getWriter().append(ResponseBuilder.createJson(ResponseCode.INVALID_USER));
-			System.out.println("未通过过滤器");
-		}
+//		HttpServletRequest httpRequest = (HttpServletRequest) request;
+//		HttpServletResponse httpResponse = (HttpServletResponse) response;
+//		System.err.println(new Date() + " ValidateFilter " + httpRequest.getRequestURI());
+//
+//		if (httpRequest.getSession().getAttribute("USERNAME") != null) {
+//			chain.doFilter(request, response);
+//			System.out.println("通过过滤器");
+//		} else {
+//			httpResponse.getWriter().append(ResponseBuilder.createJson(ResponseCode.INVALID_USER));
+//			System.out.println("未通过过滤器");
+//		}
 		//回来的返回值，对他们进行操作，代码要写在这行代码下面
 	}
 

@@ -47,7 +47,7 @@ public class ImageServlet extends HttpServlet {
 		 */
 		List<Image> imageList = null;
 		Image image = null;
-		if (session.getAttribute("USERNAME") != null) {
+//		if (session.getAttribute("USERNAME") == null) {
 			if (request.getParameter("pno") != null && request.getParameter("count") != null
 					&& request.getParameter("id") == null) { // 分页查询
 				try {
@@ -84,9 +84,9 @@ public class ImageServlet extends HttpServlet {
 				//System.out.println("4");
 				response.getWriter().append(ResponseBuilder.createJson(ResponseCode.QUERY_FAILED));
 			}
-		} else {
-			response.getWriter().append(ResponseBuilder.createJson(ResponseCode.INVALID_USER));
-		}
+//		} else {
+//			response.getWriter().append(ResponseBuilder.createJson(ResponseCode.INVALID_USER));
+//		}
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)

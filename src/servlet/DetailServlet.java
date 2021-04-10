@@ -52,7 +52,7 @@ public class DetailServlet extends HttpServlet {
 		 * 从数据库查询image数据表记录（分页查询、基于ID查询）
 		 */
 		Comment comment = new Comment();
-		if (session.getAttribute("USERNAME") != null) {
+		//if (session.getAttribute("USERNAME") != null) {
 			if (request.getParameter("id") != null && request.getParameter("comment") != null) { 
 				try {
 					//System.out.println(Integer.parseInt(request.getParameter("id")));
@@ -93,10 +93,10 @@ public class DetailServlet extends HttpServlet {
 					response.getWriter().append(ResponseBuilder.createJson(ResponseCode.SERVICE_ERROR));
 				}
 			
-			} else {
-				System.out.println("error!");
-				response.getWriter().append(ResponseBuilder.createJson(ResponseCode.INVALID_USER));
-			}
+//			} else {
+//				System.out.println("error!");
+//				response.getWriter().append(ResponseBuilder.createJson(ResponseCode.INVALID_USER));
+//			}
 			
 		
 		

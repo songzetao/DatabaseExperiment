@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import service.UserService;
 import util.ResponseBuilder;
 import util.ResponseCode;
 
@@ -32,17 +33,24 @@ public class LoginServlet extends HttpServlet {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 
-		HttpSession session = request.getSession();
-
-		if ("admin".equals(username) && "admin".equals(password)) {
-			session.setAttribute("USERNAME", username);
-			// response.getWriter().append(ResponseBuilder.createJson(ResponseCode.USER_LOGIN_SUCCESS));
-			// 此处用页面跳转的方式
+		//HttpSession session = request.getSession();
+		
+		UserService userService=new UserService();
+		if(userService.login(username, password)) {
 			response.sendRedirect("index.html");
-		} else {
-			// response.getWriter().append(ResponseBuilder.createJson(ResponseCode.USER_LOGIN_FAILED));
-			response.sendRedirect("login.html");
 		}
+//		}else {
+//			response.sendRedirect("login.html");
+//		}
+//		if ("admin".equals(username) && "admin".equals(password)) {
+//			session.setAttribute("USERNAME", username);
+//			// response.getWriter().append(ResponseBuilder.createJson(ResponseCode.USER_LOGIN_SUCCESS));
+//			// 此处用页面跳转的方式
+//			
+//		} else {
+//			// response.getWriter().append(ResponseBuilder.createJson(ResponseCode.USER_LOGIN_FAILED));
+//			response.sendRedirect("login.html");
+//		}
 	}
 
 }
